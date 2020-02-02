@@ -58,7 +58,9 @@ int     main(int argc, char **argv)
     int         x_pos;
     int         y_pos;
     int         width;
+    int         width_b;
     int         height;
+    int         height_b;
 
     if (argc != 2)
     {
@@ -78,12 +80,12 @@ int     main(int argc, char **argv)
             return (1);
         }
         buffer[ret] = '\0';
-        ft_putstr(buffer); //a supprimer
-        printf("\n");
+        //parser la premiere ligne
         w = ft_atoi_spe(buffer, &i);
         h = ft_atoi_spe(buffer, &i);
         c = buffer[i];
         i += 2;
+        //malloc et creation du tableau
         tab = malloc(h * sizeof(char*));
 	    for (int j = 0; j < h; j++)
 	    {
@@ -91,17 +93,30 @@ int     main(int argc, char **argv)
 	    	for (int k = 0; k < w; k++)
 		    	tab[j][k] = c;
 	    }
+        //dessiner les rectangles
         while (buffer[i])
         {
+            //parser les infos lignes a lignes
             contour = buffer[i++];
             x_pos = ft_atoi_spe(buffer, &i);
             y_pos = ft_atoi_spe(buffer, &i);
             width = ft_atoi_spe(buffer, &i) + x_pos;
             height = ft_atoi_spe(buffer, &i) + y_pos;
             c = buffer[i++];
-            printf("contour = %c  x_pos = %i y_pos = %i width = %i height = %i char = %c\n", contour, x_pos, y_pos, width, height, c);
+            if (x_pos < 0)
+                x_pos = 0;
+            if (y_pos < 0)
+                y_pos = 0;
+            width_b = width;
+            if (width > w)
+                width = w;
+            height_b = height;
+            if (height > h)
+                height = h;
+            //printf("contour = %c  x_pos = %i y_pos = %i width = %i height = %i char = %c\n", contour, x_pos, y_pos, width, height, c);
             if (buffer[i] == '\n')
                 i++;
+            //dessiner si grand R ou petit r
             if (contour == 'R')
             {
                 for (int j = y_pos; j < height; j++)
@@ -115,11 +130,12 @@ int     main(int argc, char **argv)
                 for (int j = y_pos; j < height; j++)
 	            {
                     for (int k = x_pos; k < width; k++)
-                        if (j == y_pos || j == height - 1 || k == x_pos || k == width - 1)
+                        if (j == y_pos || j == height_b - 1 || k == x_pos || k == width_b - 1)
                             tab[j][k] = c;
                 }
             }
         }
+        //desiner le tab
         for (int j = 0; j < h; j++)
 	    {
             ft_putstr(tab[j]);
