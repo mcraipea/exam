@@ -13,6 +13,7 @@ int     ft_atoi_spe(char *buffer, int *i)
     int         result = 0;
     int         virg = 0;
     int         neg = 0;
+	int			verif = 0;
 
     while (buffer[*i] && buffer[*i] == ' ')
         *i += 1;
@@ -25,6 +26,7 @@ int     ft_atoi_spe(char *buffer, int *i)
     {
         result = 10 * result + buffer[*i] - '0';
         *i += 1;
+		verif = 1;
     }
     if (buffer[*i] == '.')
     {
@@ -39,7 +41,10 @@ int     ft_atoi_spe(char *buffer, int *i)
         result *= -1;
     if (virg > 0)
         result += 1;
-    return (result);
+	if (verif == 1)
+    	return (result);
+	else
+		return (-10000);
 }
 
 int     main(int argc, char **argv)
@@ -81,10 +86,14 @@ int     main(int argc, char **argv)
         }
         buffer[ret] = '\0';
         //parser la premiere ligne
-        w = ft_atoi_spe(buffer, &i);
-        h = ft_atoi_spe(buffer, &i);
-        c = buffer[i];
-        i += 2;
+        if ((w = ft_atoi_spe(buffer, &i)) == 0)
+			return (1);
+        if ((h = ft_atoi_spe(buffer, &i)) == 0)
+			return (1);
+       	if ((c = buffer[i++]) < 33 || c > 126)
+			return (1);
+        if (buffer[i] == '\n')
+			i++;
         //malloc et creation du tableau
         tab = malloc(h * sizeof(char*));
 	    for (int j = 0; j < h; j++)
@@ -98,11 +107,16 @@ int     main(int argc, char **argv)
         {
             //parser les infos lignes a lignes
             contour = buffer[i++];
-            x_pos = ft_atoi_spe(buffer, &i);
-            y_pos = ft_atoi_spe(buffer, &i);
-            width = ft_atoi_spe(buffer, &i) + x_pos;
-            height = ft_atoi_spe(buffer, &i) + y_pos;
-            c = buffer[i++];
+            if ((x_pos = ft_atoi_spe(buffer, &i)) == -10000)
+				return (1);
+            if ((y_pos = ft_atoi_spe(buffer, &i)) == -10000)
+				return (1);
+            if ((width = ft_atoi_spe(buffer, &i) + x_pos) == -10000)
+				return (1);
+            if ((height = ft_atoi_spe(buffer, &i) + y_pos) == -10000)
+				return (1);
+            if ((c = buffer[i++]) < 33 || c > 126)
+				return (1);
             if (x_pos < 0)
                 x_pos = 0;
             if (y_pos < 0)
@@ -113,7 +127,6 @@ int     main(int argc, char **argv)
             height_b = height;
             if (height > h)
                 height = h;
-            //printf("contour = %c  x_pos = %i y_pos = %i width = %i height = %i char = %c\n", contour, x_pos, y_pos, width, height, c);
             if (buffer[i] == '\n')
                 i++;
             //dessiner si grand R ou petit r
