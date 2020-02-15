@@ -179,7 +179,8 @@ int     main(int argc, char **argv)
         //desiner le tab
         for (int j = 0; j < h; j++)
 	    {
-            ft_putstr(tab[j]);
+            for (int k = 0; k < w; k++)
+				write(1, &tab[j][k], 1);
 		    ft_putstr("\n");
 	    }
     }
