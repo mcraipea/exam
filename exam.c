@@ -46,8 +46,6 @@ int     ft_atoi_spe(char *str, int *i)
         *i += 1;
 	if (check_char(str[*i]))
 		return (-10000);
-   //for (decplace = 1.; str[*i] && isdigit(str[*i]); *i++, decplace *= 10.)
-   //     res = res * 10. + (*str - '0');
 	while (str[*i] && check_digit(str[*i]))
     	*i += 1;
 	if (check_char(str[*i]))
@@ -86,21 +84,16 @@ int     main(int argc, char **argv)
     }
     else
     {
-        if ((fd = fopen(argv[1], "r")) == NULL)
+        if ((fd = fopen(argv[1], "r")) == NULL || (ret = fread(buffer, sizeof(char), 1023, fd)) < 0)
         {
-            ft_putstr("Error: file open\n");
-            return (1);
-        }
-        if ((ret = fread(buffer, sizeof(char), 1023, fd)) < 0)
-        {
-            ft_putstr("Error: file read\n");
+            ft_putstr("Error: file operation\n");
             return (1);
         }
         buffer[ret] = '\0';
         //parser la premiere ligne
         if ((w = ft_atoi_spe(buffer, &i)) <= 0 || w > 300 || w == -10000)
 			return (1);
-        if ((h = ft_atoi_spe(buffer, &i)) == 0 || h > 300 || h == -10000)
+        if ((h = ft_atoi_spe(buffer, &i)) <= 0 || h > 300 || h == -10000)
 			return (1);
        	if ((c = buffer[i++]) < 33 || c > 126)
 			return (1);
@@ -110,6 +103,7 @@ int     main(int argc, char **argv)
 			return (1);
 		if (buffer[i] == '\n')
 			i++;
+        
         //malloc et creation du tableau
         tab = malloc(h * sizeof(char*));
 	    for (int j = 0; j < h; j++)
@@ -118,6 +112,7 @@ int     main(int argc, char **argv)
 	    	for (int k = 0; k < w; k++)
 		    	tab[j][k] = c;
 	    }
+        
         //dessiner les rectangles
         while (buffer[i])
         {
@@ -136,15 +131,14 @@ int     main(int argc, char **argv)
 				return (1);
             if ((c = buffer[i++]) < 33 || c > 126)
 				return (1);
-		//	printf("x = %i, y = %i, width = %i, height = %i, c = %c\n", x_pos, y_pos, width, height, c);
         	while (buffer[i] && buffer[i] == ' ')
 				i++;
-		//	printf("buffer = %c\n", buffer[i]);
-			if (buffer[i] != '\0' && buffer[i] != '\n')
+			if (buffer[i] && buffer[i] != '\n')
 				return (1);
 			if (buffer[i] == '\n')
 				i++;
-			x_pos_b = x_pos;
+			
+            x_pos_b = x_pos;
             if (x_pos < 0)
                 x_pos = 0;
 			y_pos_b = y_pos;
@@ -156,8 +150,8 @@ int     main(int argc, char **argv)
             height_b = height;
             if (height > h)
                 height = h;
+           
             //dessiner si grand R ou petit r
-		//	printf("test\n");
             if (contour == 'R')
             {
                 for (int j = y_pos; j < height; j++)
@@ -176,6 +170,8 @@ int     main(int argc, char **argv)
                 }
             }
         }
+
+        
         //desiner le tab
         for (int j = 0; j < h; j++)
 	    {
@@ -186,3 +182,6 @@ int     main(int argc, char **argv)
     }
     return (0);
 }
+
+
+		//	printf("x = %i, y = %i, width = %i, height = %i, c = %c\n", x_pos, y_pos, width, height, c);
