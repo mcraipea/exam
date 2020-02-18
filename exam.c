@@ -26,10 +26,11 @@ int     ft_atoi_spe(char *str, int *i)
 {
     int         res = 0;
     int         neg = 1;
+    int         ret2 = 0;
 
     while (str[*i] && str[*i] == ' ')
         *i += 1;
-	if (check_char(str[*i]))
+	if (str[*i] != '-' && check_char(str[*i]))
 		return (-10000);
     if (str[*i] == '-')
 	{
@@ -40,18 +41,23 @@ int     ft_atoi_spe(char *str, int *i)
 		return (-10000);
 	for (res = 0; str[*i] && check_digit(str[*i]); *i += 1)
         res = res * 10 + str[*i] - '0';
-	if (check_char(str[*i]))
+	if (str[*i] != '.' && check_char(str[*i]))
 		return (-10000);
     if (str[*i] == '.')
         *i += 1;
 	if (check_char(str[*i]))
 		return (-10000);
 	while (str[*i] && check_digit(str[*i]))
-    	*i += 1;
+    {
+        ret2 = ret2 * 10 + str[*i] - '0';
+        *i += 1;
+    }
 	if (check_char(str[*i]))
 		return (-10000);
     while (str[*i] && str[*i] == ' ')
         *i += 1;
+    if (ret2 > 0 && neg == 1)
+        res += 1;
     return (neg * res);
 }
 
@@ -91,9 +97,9 @@ int     main(int argc, char **argv)
         }
         buffer[ret] = '\0';
         //parser la premiere ligne
-        if ((w = ft_atoi_spe(buffer, &i)) <= 0 || w > 300 || w == -10000)
+        if ((w = ft_atoi_spe(buffer, &i)) < 0 || w >= 300)
 			return (1);
-        if ((h = ft_atoi_spe(buffer, &i)) <= 0 || h > 300 || h == -10000)
+        if ((h = ft_atoi_spe(buffer, &i)) < 0 || h > 300)
 			return (1);
        	if ((c = buffer[i++]) < 33 || c > 126)
 			return (1);
@@ -101,7 +107,7 @@ int     main(int argc, char **argv)
 			i++;
 		if (buffer[i] && buffer[i] != '\n')
 			return (1);
-		if (buffer[i] == '\n')
+		while (buffer[i] && (buffer[i] == '\n' || buffer[i] == ' '))
 			i++;
         
         //malloc et creation du tableau
@@ -125,9 +131,9 @@ int     main(int argc, char **argv)
 				return (1);
             if ((y_pos = ft_atoi_spe(buffer, &i)) < -2148000 || y_pos > 2147000 || y_pos == -10000)
 				return (1);
-            if ((width = ft_atoi_spe(buffer, &i) + x_pos) < -2148000 || width > 2147000 || width == -10000)
+            if ((width = ft_atoi_spe(buffer, &i)) < -2148000 || width > 2147000 || width == -10000)
 				return (1);
-            if ((height = ft_atoi_spe(buffer, &i) + y_pos) < -2148000 || height > 2147000 || height == -10000)
+            if ((height = ft_atoi_spe(buffer, &i)) < -2148000 || height > 2147000 || height == -10000)
 				return (1);
             if ((c = buffer[i++]) < 33 || c > 126)
 				return (1);
@@ -135,7 +141,7 @@ int     main(int argc, char **argv)
 				i++;
 			if (buffer[i] && buffer[i] != '\n')
 				return (1);
-			if (buffer[i] == '\n')
+			while (buffer[i] && (buffer[i] == '\n' || buffer[i] == ' '))
 				i++;
 			
             x_pos_b = x_pos;
@@ -144,9 +150,11 @@ int     main(int argc, char **argv)
 			y_pos_b = y_pos;
             if (y_pos < 0)
                 y_pos = 0;
+            width += x_pos;
             width_b = width;
             if (width > w)
                 width = w;
+            height += y_pos;
             height_b = height;
             if (height > h)
                 height = h;
@@ -182,6 +190,3 @@ int     main(int argc, char **argv)
     }
     return (0);
 }
-
-
-		//	printf("x = %i, y = %i, width = %i, height = %i, c = %c\n", x_pos, y_pos, width, height, c);
